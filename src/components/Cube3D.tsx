@@ -30,23 +30,24 @@ export default function Cube3D() {
     if (groupRef.current) {
       const t = state.clock.elapsedTime
 
-      mouseInfluence.x += (mouse.x * 0.3 - mouseInfluence.x) * 0.05
-      mouseInfluence.y += (mouse.y * 0.3 - mouseInfluence.y) * 0.05
+      mouseInfluence.x += (mouse.x * 0.5 - mouseInfluence.x) * 0.03
+      mouseInfluence.y += (mouse.y * 0.5 - mouseInfluence.y) * 0.03
 
-      groupRef.current.rotation.x = Math.sin(t * 0.2) * 0.2 + mouseInfluence.y
-      groupRef.current.rotation.y = t * 0.3 + mouseInfluence.x
-      groupRef.current.rotation.z = Math.cos(t * 0.15) * 0.1
+      groupRef.current.rotation.x = Math.sin(t * 0.15) * 0.15 + mouseInfluence.y
+      groupRef.current.rotation.y = t * 0.25 + mouseInfluence.x
+      groupRef.current.rotation.z = Math.cos(t * 0.12) * 0.08
     }
   })
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-      <directionalLight position={[-5, -5, -5]} intensity={0.3} />
-      <pointLight position={[0, 0, 5]} intensity={0.5} color="#ffffff" />
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
+      <directionalLight position={[-5, -5, -3]} intensity={0.3} />
+      <pointLight position={[0, 0, 8]} intensity={0.6} color="#ffffff" />
+      <spotLight position={[5, 5, 5]} intensity={0.4} angle={0.3} penumbra={1} />
 
-      <group ref={groupRef}>
+      <group ref={groupRef} scale={1.8}>
         <RubiksCube />
       </group>
     </>
@@ -55,8 +56,8 @@ export default function Cube3D() {
 
 function RubiksCube() {
   const cubelets = []
-  const size = 0.95
-  const gap = 0.05
+  const size = 0.98
+  const gap = 0.03
   const offset = size + gap
 
   for (let x = -1; x <= 1; x++) {
@@ -109,11 +110,13 @@ function Cubelet({ position, x, y, z }: CubeletProps) {
 
   return (
     <RoundedBox
-      args={[0.9, 0.9, 0.9]}
+      args={[0.95, 0.95, 0.95]}
       position={position}
-      radius={0.05}
+      radius={0.08}
       smoothness={4}
       material={materials}
+      castShadow
+      receiveShadow
     />
   )
 }

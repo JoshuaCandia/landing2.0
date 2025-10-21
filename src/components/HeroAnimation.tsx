@@ -38,14 +38,14 @@ export default function HeroAnimation() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
-      className="relative w-full h-full min-h-[400px] lg:min-h-[600px]"
+      className="relative w-full h-full min-h-[500px] lg:min-h-[700px]"
     >
       {/* Fallback gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 rounded-2xl" />
       
       {/* 3D Canvas */}
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 45 }}
+        camera={{ position: [0, 0, 6.5], fov: 50 }}
         onCreated={handleCanvasCreated}
         onError={handleCanvasError}
         className="absolute inset-0"
@@ -53,6 +53,7 @@ export default function HeroAnimation() {
         dpr={[1, 2]}
         performance={{ min: 0.5 }}
         shadows
+        gl={{ antialias: true, alpha: true }}
       >
         <Suspense fallback={null}>
           <Cube3D />
