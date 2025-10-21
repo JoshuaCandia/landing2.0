@@ -1,53 +1,52 @@
-import { useRef, useState, useMemo } from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { Mesh, Vector3, Group } from 'three'
+import { MeshStandardMaterial } from 'three'
+import { RoundedBox } from '@react-three/drei'
+import type { Group } from 'three'
+
+interface CubeletProps {
+  position: [number, number, number]
+  x: number
+  y: number
+  z: number
+}
+
+const RUBIK_COLORS = {
+  right: '#FF5722',
+  left: '#FF9800',
+  top: '#FFFFFF',
+  bottom: '#FFEB3B',
+  front: '#4CAF50',
+  back: '#2196F3'
+}
 
 export default function Cube3D() {
   const groupRef = useRef<Group>(null)
-  const [hovered, setHovered] = useState(false)
-  const { viewport, mouse } = useThree()
+  const { mouse } = useThree()
 
-  // Smooth mouse interaction with manual damping
-  const targetRotation = useMemo(() => new Vector3(), [])
-  const currentRotation = useMemo(() => new Vector3(), [])
+  const mouseInfluence = useMemo(() => ({ x: 0, y: 0 }), [])
 
   useFrame((state) => {
     if (groupRef.current) {
-      // Auto rotation - slower and more subtle like Resend
-      groupRef.current.rotation.x = state.clock.elapsedTime * 0.1
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.15
+      const t = state.clock.elapsedTime
 
-      // Mouse interaction with smooth damping
-      targetRotation.set(mouse.y * 0.05, mouse.x * 0.05, 0)
-      currentRotation.lerp(targetRotation, 0.02)
-      groupRef.current.rotation.x += currentRotation.x
-      groupRef.current.rotation.y += currentRotation.y
+      mouseInfluence.x += (mouse.x * 0.3 - mouseInfluence.x) * 0.05
+      mouseInfluence.y += (mouse.y * 0.3 - mouseInfluence.y) * 0.05
+
+      groupRef.current.rotation.x = Math.sin(t * 0.2) * 0.2 + mouseInfluence.y
+      groupRef.current.rotation.y = t * 0.3 + mouseInfluence.x
+      groupRef.current.rotation.z = Math.cos(t * 0.15) * 0.1
     }
   })
 
   return (
     <>
-      {/* Lighting setup - more subtle like Resend */}
-      <ambientLight intensity={0.6} />
-      <directionalLight
-        position={[2, 2, 5]}
-        intensity={0.8}
-        color="#8B5CF6"
-      />
-      <directionalLight
-        position={[-2, -2, -5]}
-        intensity={0.4}
-        color="#22D3EE"
-      />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
+      <directionalLight position={[-5, -5, -5]} intensity={0.3} />
+      <pointLight position={[0, 0, 5]} intensity={0.5} color="#ffffff" />
 
-      {/* Main cube group - like Resend's Rubik's cube */}
-      <group
-        ref={groupRef}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        scale={hovered ? 1.05 : 1}
-      >
-        {/* Rubik's cube structure */}
+      <group ref={groupRef}>
         <RubiksCube />
       </group>
     </>
@@ -55,58 +54,67 @@ export default function Cube3D() {
 }
 
 function RubiksCube() {
-  const cubeSize = 0.6
-  const spacing = 0.02
-  
-  // Create 3x3x3 cube structure like Resend
-  const cubes = []
+  const cubelets = []
+  const size = 0.95
+  const gap = 0.05
+  const offset = size + gap
+
   for (let x = -1; x <= 1; x++) {
     for (let y = -1; y <= 1; y++) {
       for (let z = -1; z <= 1; z++) {
-        const position = [
-          x * (cubeSize + spacing),
-          y * (cubeSize + spacing), 
-          z * (cubeSize + spacing)
-        ] as [number, number, number]
-        
-        cubes.push(
-          <Cubelet 
+        cubelets.push(
+          <Cubelet
             key={`${x}-${y}-${z}`}
-            position={position}
-            colors={getCubeletColors(x, y, z)}
+            position={[x * offset, y * offset, z * offset]}
+            x={x}
+            y={y}
+            z={z}
           />
         )
       }
     }
   }
-  
-  return <>{cubes}</>
+
+  return <>{cubelets}</>
 }
 
-function Cubelet({ position, colors }: { position: [number, number, number], colors: string[] }) {
+function Cubelet({ position, x, y, z }: CubeletProps) {
+  const materials = useMemo(() => {
+    const createMaterial = (color: string, isVisible: boolean) => {
+      if (!isVisible) {
+        return new MeshStandardMaterial({
+          color: '#1a1a1a',
+          metalness: 0.1,
+          roughness: 0.8
+        })
+      }
+      return new MeshStandardMaterial({
+        color,
+        metalness: 0.2,
+        roughness: 0.3,
+        emissive: color,
+        emissiveIntensity: 0.1
+      })
+    }
+
+    return [
+      createMaterial(RUBIK_COLORS.right, x === 1),
+      createMaterial(RUBIK_COLORS.left, x === -1),
+      createMaterial(RUBIK_COLORS.top, y === 1),
+      createMaterial(RUBIK_COLORS.bottom, y === -1),
+      createMaterial(RUBIK_COLORS.front, z === 1),
+      createMaterial(RUBIK_COLORS.back, z === -1)
+    ]
+  }, [x, y, z])
+
   return (
-    <mesh position={position}>
-      <boxGeometry args={[0.6, 0.6, 0.6]} />
-      <meshStandardMaterial
-        color={colors[0]}
-        metalness={0.3}
-        roughness={0.4}
-      />
-    </mesh>
+    <RoundedBox
+      args={[0.9, 0.9, 0.9]}
+      position={position}
+      radius={0.05}
+      smoothness={4}
+      material={materials}
+    />
   )
-}
-
-function getCubeletColors(x: number, y: number, z: number): string[] {
-  // Simplified color scheme like Resend's cube
-  const colors = ['#8B5CF6', '#22D3EE', '#F59E0B', '#EF4444', '#10B981', '#6366F1']
-  
-  if (x === 1) return [colors[0]] // Right face - purple
-  if (x === -1) return [colors[1]] // Left face - cyan  
-  if (y === 1) return [colors[2]] // Top face - orange
-  if (y === -1) return [colors[3]] // Bottom face - red
-  if (z === 1) return [colors[4]] // Front face - green
-  if (z === -1) return [colors[5]] // Back face - indigo
-  
-  return [colors[0]] // Default purple
 }
 

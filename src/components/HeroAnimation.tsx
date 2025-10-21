@@ -45,13 +45,14 @@ export default function HeroAnimation() {
       
       {/* 3D Canvas */}
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 50 }}
+        camera={{ position: [0, 0, 8], fov: 45 }}
         onCreated={handleCanvasCreated}
         onError={handleCanvasError}
         className="absolute inset-0"
         style={{ background: 'transparent' }}
-        dpr={[1, 2]} // Limit pixel ratio for better performance
-        performance={{ min: 0.5 }} // Reduce quality if frame rate drops
+        dpr={[1, 2]}
+        performance={{ min: 0.5 }}
+        shadows
       >
         <Suspense fallback={null}>
           <Cube3D />
