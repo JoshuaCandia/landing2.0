@@ -1,0 +1,18 @@
+---
+import CTAContent from './CTAContent'
+---
+
+<section id="contacto" class="py-20 lg:py-32 relative">
+  <!-- Background Effects -->
+  <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10"></div>
+  
+  <!-- Animated Background Elements -->
+  <div class="absolute inset-0 overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-3xl animate-float" style="animation-delay: -2s;"></div>
+  </div>
+  
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <CTAContent client:load />
+  </div>
+</section>
