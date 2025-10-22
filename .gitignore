@@ -4,7 +4,6 @@ node_modules/
 .pnp.js
 
 # Production builds
-dist/
 build/
 
 # Environment variables
@@ -80,7 +79,6 @@ jspm_packages/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/

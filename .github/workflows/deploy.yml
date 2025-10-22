@@ -24,18 +24,6 @@ jobs:
         run: |
           git pull
 
-      # --- Step 3: Build seguro con límite de threads ---
-      - name: Build (con límite de memoria y CPU)
-        working-directory: /home/ubuntu/wonkai/landing2.0
-        run: |
-          echo "Instalando dependencias..."
-          npm install
-          
-          echo "Ejecutando build con límite de memoria (512MB)..."
-          # Aquí está la magia: limitamos el "heap" de memoria de Node.js
-          export NODE_OPTIONS="--max-old-space-size=512"
-          npm run build
-
       # --- Step 4: Deploy a /var/www/wonkai ---
       - name: Copiar build a /var/www/wonkai
         run: |
