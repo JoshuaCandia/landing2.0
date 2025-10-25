@@ -32,7 +32,7 @@ export default function CTAContent() {
         viewport={{ once: true }}
       >
         <motion.a
-          href="mailto:hola@wonkai.com?subject=Consulta sobre proyecto"
+          href="mailto:wonkai.factory@gmail.com?subject=Consulta sobre proyecto"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="inline-flex items-center space-x-3 bg-gradient-to-r from-primary to-secondary text-white px-8 py-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-primary/25 transition-all duration-300"
@@ -61,7 +61,7 @@ export default function CTAContent() {
             </div>
             <h3 className="font-semibold">Email</h3>
           </div>
-          <p className="text-text/80">hola@wonkai.com</p>
+          <p className="text-text/80">wonkai.factory@gmail.com</p>
         </div>
 
         <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
